@@ -96,24 +96,6 @@ volta_fer sessao.
 
 (Como eles deram várias voltas durante a qualificação, esse comando vasculha os tempos e seleciona automaticamente apenas a volta mais rápida (aquela com o menor tempo) de cada um)
 
-## ####Exemplos:
-
-- VER - Max Verstappen
-
-- LEC - Charles Leclerc
-
-- HAM - Lewis Hamilton
-
-- NOR - Lando Norris
-
-- ALO - Fernando Alonso
-
-- SAI - Carlos Sainz
-
-- PER - Sergio Pérez
-
-###########
-
 (Puxa a telemetria)(extrai os dados físicos da volta que isolamos)
 
 (O que ele devolve (e guarda nas variáveis tel_rbr e tel_fer ) é uma tabela detalhada onde cada linha é uma fração de segundo e as colunas são as variáveis dinâmicas do veículo)
@@ -152,3 +134,85 @@ diferenca = tempo_rbr - tempo_fer
 ```
 
 (Mostra a diferença de tempo entre cada um, e demonstra tambem quem foi o mais rapido)
+
+######################################################
+🏎️ Guia de Referência
+
+Para utilizar o script corretamente, você precisará informar as siglas dos pilotos e o local da corrida. Abaixo estão as listas de abreviações e circuitos suportados pela biblioteca.
+
+🪪 Pilotos (Abreviação de 3 Letras)
+
+Insira a sigla exata (TLA) quando o terminal solicitar o corredor.
+
+Red Bull: VER (Max Verstappen) | PER (Sergio Pérez)
+
+Ferrari: LEC (Charles Leclerc) | SAI (Carlos Sainz)
+
+McLaren: NOR (Lando Norris) | PIA (Oscar Piastri)
+
+Mercedes: HAM (Lewis Hamilton) | RUS (George Russell)
+
+Aston Martin: ALO (Fernando Alonso) | STR (Lance Stroll)
+
+Alpine: GAS (Pierre Gasly) | OCO (Esteban Ocon)
+
+Williams: ALB (Alexander Albon) | SAR (Logan Sargeant) | COL (Franco Colapinto)
+
+Haas: MAG (Kevin Magnussen) | HUL (Nico Hülkenberg) | BEA (Oliver Bearman)
+
+RB / AlphaTauri: TSU (Yuki Tsunoda) | RIC (Daniel Ricciardo) | LAW (Liam Lawson)
+
+Sauber / Alfa Romeo: BOT (Valtteri Bottas) | ZHO (Zhou Guanyu)
+
+🌍 Locais das Corridas
+
+Você pode alterar o local no código (na função fastf1.get_session()) usando o nome do país ou do circuito (em inglês). Escolha uma das opções por linha para definir a etapa desejada:
+
+Bahrain ou Sakhir
+
+Saudi Arabia ou Jeddah
+
+Australia ou Melbourne
+
+Japan ou Suzuka
+
+China ou Shanghai
+
+Miami
+
+Emilia Romagna ou Imola
+
+Monaco
+
+Canada ou Montreal
+
+Spain ou Barcelona
+
+Austria ou Spielberg
+
+Great Britain ou Silverstone
+
+Hungary ou Budapest
+
+Belgium ou Spa
+
+Netherlands ou Zandvoort
+
+Italy ou Monza
+
+Azerbaijan ou Baku
+
+Singapore
+
+USA ou Austin
+
+Mexico ou Mexico City
+
+Brazil ou Interlagos
+
+Las Vegas
+
+Qatar ou Lusail
+
+Abu Dhabi ou Yas Marina
+############################################
