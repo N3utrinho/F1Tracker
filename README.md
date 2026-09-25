@@ -1,4 +1,4 @@
-F1Tracker
+
 O F1Tracker é um projeto focado no processamento de dados de telemetria de código aberto da Fórmula 1 utilizando Python e a biblioteca fastf1. O objetivo central é criar ferramentas analíticas essenciais para a engenharia de pista, entendendo através de dados exatamente onde o tempo de volta pode ser otimizado.
 
 Esta análise prática foca em quatro métricas específicas de performance:
