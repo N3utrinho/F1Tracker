@@ -1,148 +1,93 @@
-## Projeto F1Tracker
+F1Tracker
+O F1Tracker é um projeto focado no processamento de dados de telemetria de código aberto da Fórmula 1 utilizando Python e a biblioteca fastf1. O objetivo central é criar ferramentas analíticas essenciais para a engenharia de pista, entendendo através de dados exatamente onde o tempo de volta pode ser otimizado.
 
-## Objetivo Geral:
+Esta análise prática foca em quatro métricas específicas de performance:
 
-O objetivo do projeto é processar dados de telemetria de código aberto da
+O DeltaT entre duas voltas.
 
-Fórmula 1 usando Python e a biblioteca FastF1 para entender onde o tempo de volta pode ser ganho.
+O posicionamento no ápice da curva.
 
-A análise prática foca em quatro métricas específicas:
+Os pontos de frenagem e liberação do freio.
 
-- O DeltaT entre duas voltas
+A velocidade mínima durante o contorno das curvas.
 
-- O posicionamento no ápice da curva
+Com essas informações fundamentadas em dados reais das corridas, é possível determinar e comparar as melhores decisões e estratégias de pilotagem em cada circuito.
 
-- Os pontos de frenagem e liberação do freio
+⚙️ Configuração do Ambiente
+Para garantir estabilidade e evitar bloqueios ou sobrecargas comuns em plataformas na nuvem (como o Google Colab), este projeto foi estruturado para rodar localmente na sua máquina utilizando o Jupyter Notebook.
 
-- A velocidade mínima durante o contorno das curvas
+Passo a Passo
+Abra o Prompt de Comando (CMD) ou o terminal do seu computador.
 
-Para assim conseguir determinar, com meio de dados qual seria a melhor opção no momento de cada corrida
+Instale as dependências necessárias:
 
-Independente do computador que for rodar o codigo, tem-se que ter as bibliotecas nescessaria para o funcionamento ideal do codigo, portanto:
-
-CMD: pip install fastf1 pandas matplotlib
-
-Aqui como sera feito em uma ambiente de testes, eu usarei o Google Colab
-
-#A api do Google Colab está bloqueando formas de execuções que nao rodem em computadores locais, para evitar sobrecarga eu acho. Enfim, ao inves do Google Colab começarei a usar o Jupyter Notebook, que roda localmente na sua maquina, com apenas algumas linhas de codigos sem precisar instalar e configurar todo um sistema (Python no caso)
-
-## Passo a Passo:
-
-## 1. Abra o Prompt de Comando (CMD)
-
-## 2. Instale as bibliotecas necessárias
-
+Bash
 pip install fastf1 pandas matplotlib notebook
+Nota: O download e a instalação dos pacotes podem levar alguns minutos, dependendo da velocidade da sua internet.
 
-- Nota: O computador vai baixar alguns arquivos. Pode demorar um pouco de acordo com a velocidade da Net
+Crie e acesse a pasta do projeto:
 
-## 3. Crie uma pasta para o projeto
-
-- Criar Pasta do Projeto:
-
+Bash
 mkdir ProjetoF1
+cd ProjetoF1
+Inicie o ambiente virtual:
 
-- Entrar na Pasta
+Bash
+jupyter notebook
+O seu navegador padrão (Chrome, Safari, etc.) abrirá automaticamente a interface do Jupyter (geralmente no endereço localhost:8888).
 
-cd ProjetoF1 e aperte Enter .
+Crie um novo script: Vá em New (Novo) > Notebook e selecione o kernel Python 3. Cole o código base na célula de execução.
 
-## 4. Criação de um notebook no Jupyter
+🧠 Funcionamento do Código
+Abaixo está o detalhamento de como o script estrutura e processa a telemetria.
 
+Importações e Otimização de Cache
+Python
+import fastf1
+import fastf1.plotting
+import matplotlib.pyplot as plt
+import os
 
-- Abrir o Jupyter jupyter notebook
+os.makedirs('cache', exist_ok=True)
+fastf1.Cache.enable_cache('cache')
+O código carrega as bibliotecas necessárias para manipulação de dados dinâmicos e plotagem. A configuração de cache cria uma pasta local para salvar a corrida no seu PC, evitando que o computador precise se conectar aos servidores e baixar centenas de megabytes de dados novamente a cada execução.
 
-- O navegador vai abrir a forma de pesquisa padrão do computador (Chrome, Safari, Opera, etc) (provavelmente no endereço localhost:8888 ).
+Carregamento da Sessão
+Python
+sessao = fastf1.get_session(2023, 'Brazil', 'Q')
+sessao.load()
+Ao executar este comando, o computador acessa a internet e baixa os dados da etapa definida pelos parâmetros: Ano (Ex: 2023), Localidade (Ex: Brazil) e Tipo de Sessão ('Q' para Qualificação, 'R' para Corrida, 'FP1', 'FP2', 'FP3' para Treinos Livres).
 
-- Vá em New (Novo) e escolha a opção Notebook (se ele perguntar qual é o Kernel, basta selecionar "Python 3").
+Filtragem e Isolação de Voltas
+Python
+volta_1 = sessao.laps.pick_driver(corredor_1).pick_fastest()
+volta_2 = sessao.laps.pick_driver(corredor_2).pick_fastest()
+O FastF1 utiliza a sigla oficial de três letras para identificar os pilotos. Como eles completam várias voltas durante uma qualificação, esse comando atua como um funil: ele vasculha os tempos totais e isola automaticamente apenas a volta mais rápida (menor tempo) de cada piloto escolhido.
 
-- Cole o seu código dentro dessa caixa
+Extração da Telemetria
+Python
+tel_1 = volta_1.get_telemetry()
+tel_2 = volta_2.get_telemetry()
+Esse comando extrai os dados físicos da volta isolada. Ele devolve uma tabela detalhada onde cada linha representa uma fração de segundo e as colunas armazenam as variáveis dinâmicas do veículo. Você passa a ter acesso a canais fundamentais para análise:
 
-## Funcionamento do Codigo:
+Speed: Velocidade instantânea em km/h.
 
-fastfl
+Throttle: Porcentagem de aplicação do acelerador (0 a 100%).
 
-fastfl.plotting
+Brake: Acionamento e pressão do sistema de freios.
 
-matplotlib.pyplot plt
+nGear: Marcha engatada no momento.
 
-os
+X, Y, Z: Coordenadas espaciais do GPS para mapear a trajetória.
 
-(Importa as bibliotecas nescessarias para a execução do codigo)
+Visualização e Comparativo (DeltaT)
+O trecho final do script utiliza o matplotlib para gerar um gráfico bidimensional (Distância em metros vs. Velocidade em km/h). Em seguida, ele extrai o tempo total de cada volta usando .total_seconds(), imprime os tempos separadamente no terminal e utiliza uma lógica condicional (if/elif/else) para calcular o delta (a diferença exata de tempo) e demonstrar qual piloto foi o mais rápido.
 
-```
-exist_ok=
-(misc_mpl_mods=
-```
-
-(Cria uma pasta para salvar os dados no seu PC e não precisar baixar de novo)
-
-(Carrega a Qualificação de Monza em 2023 (Ano; Localidade;
-
-'Q'(Qualificatoria)'R'(Corrida) (FP1', 'FP2')(Treinos Livres))
-
-(Depois o computador acessa a internet , se conecta ao servidores e baixa os dados nescessarios de acordo com os argumentos inseridos)
-
-```
-volta_rbr sessao.
-volta_fer sessao.
-```
-
-(Funciona como um funil, onde antes a gente pegou os dados de toda a corrida, aqui é filtrado de acordo com os dados que a gente deseja comparar)
-
-
-(Isola a volta mais rápida de cada piloto)
-
-(Max Verstappen ('VER') e Charles Leclerc ('LEC'). O FastF1 sempre usa a sigla oficial de três letras de cada piloto)
-
-(Como eles deram várias voltas durante a qualificação, esse comando vasculha os tempos e seleciona automaticamente apenas a volta mais rápida (aquela com o menor tempo) de cada um)
-
-(Puxa a telemetria)(extrai os dados físicos da volta que isolamos)
-
-(O que ele devolve (e guarda nas variáveis tel_rbr e tel_fer ) é uma tabela detalhada onde cada linha é uma fração de segundo e as colunas são as variáveis dinâmicas do veículo)
-
-Dentro dessa tabela gerada pelo código, você passa a ter acesso a canais fundamentais para a engenharia de pista:
-
-- Speed: Velocidade instantânea em km/h.
-
-- Throttle: Porcentagem de aplicação do acelerador (0 a 100%).
-
-- Brake: Acionamento e pressão do sistema de freios.
-
-- nGear: Marcha engatada no momento.
-
-- X, Y, Z: Coordenadas espaciais do GPS para mapear a trajetória.
-
-
-(Cria e plota o gráfico) (De disntacia (m) por Velocidade (Km/h)
-
-(Layout do Grafico)
-
-(Parte grafica pronta)
-
-(Extrair o tempo total de cada volta)
-
-(Mostra os tempos de cada um de forma separada)
-
-```
-( )
-tempo_rbr < tempo_fer:
-diferenca = tempo_fer - tempo_rbr
-( diferenca
-tempo_fer < tempo_rbr:
-diferenca = tempo_rbr - tempo_fer
-( diferenca
-```
-
-(Mostra a diferença de tempo entre cada um, e demonstra tambem quem foi o mais rapido)
-
-######################################################
 🏎️ Guia de Referência
-
-Para utilizar o script corretamente, você precisará informar as siglas dos pilotos e o local da corrida. Abaixo estão as listas de abreviações e circuitos suportados pela biblioteca.
+Para utilizar o script corretamente, você precisará informar as siglas dos pilotos no terminal e ajustar o local da corrida diretamente no código base.
 
 🪪 Pilotos (Abreviação de 3 Letras)
-
-Insira a sigla exata (TLA) quando o terminal solicitar o corredor.
+Insira a sigla exata (TLA) quando o prompt do terminal solicitar o corredor.
 
 Red Bull: VER (Max Verstappen) | PER (Sergio Pérez)
 
@@ -165,8 +110,7 @@ RB / AlphaTauri: TSU (Yuki Tsunoda) | RIC (Daniel Ricciardo) | LAW (Liam Lawson)
 Sauber / Alfa Romeo: BOT (Valtteri Bottas) | ZHO (Zhou Guanyu)
 
 🌍 Locais das Corridas
-
-Você pode alterar o local no código (na função fastf1.get_session()) usando o nome do país ou do circuito (em inglês). Escolha uma das opções por linha para definir a etapa desejada:
+Você pode alterar o local no código base, dentro da função fastf1.get_session(), usando o nome do país ou do circuito oficial em inglês. Escolha uma das opções abaixo:
 
 Bahrain ou Sakhir
 
@@ -215,4 +159,3 @@ Las Vegas
 Qatar ou Lusail
 
 Abu Dhabi ou Yas Marina
-############################################
